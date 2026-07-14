@@ -302,9 +302,12 @@ services:
         extends:
             file: docker-compose.base.yml
             service: proxy
+        networks:
+            default:
+            coolify-resource:
         logging: *default-logging
         expose:
-            - '80'
+            - '8000'
         labels:
             - 'traefik.enable=true'
             - 'traefik.http.middlewares.gzip.compress=true'
@@ -319,8 +322,8 @@ services:
             - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.service=https-0-y6s32fammnhcr2l7x4ulkhlw'
             - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls=true'
             - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls.certresolver=letsencrypt'
-            - 'traefik.http.services.http-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80'
-            - 'traefik.http.services.https-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80'
+            - 'traefik.http.services.http-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=8000'
+            - 'traefik.http.services.https-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=8000'
         volumes:
             - caddy-data:/data
             - caddy-config:/config
@@ -670,3 +673,8 @@ volumes:
     redis7-data:
     kafka-data:
     redpanda-data:
+
+networks:
+    coolify-resource:
+        external: true
+        name: y6s32fammnhcr2l7x4ulkhlw
