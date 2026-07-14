@@ -4,6 +4,22 @@ services:
     ports: !reset []
     expose:
       - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.gzip.compress=true"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.entryPoints=http"
+      - "traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.middlewares=redirect-to-https"
+      - "traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.rule=Host(`posthog.app.iapplabs.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.service=http-0-y6s32fammnhcr2l7x4ulkhlw"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.entryPoints=https"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.middlewares=gzip"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.rule=Host(`posthog.app.iapplabs.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.service=https-0-y6s32fammnhcr2l7x4ulkhlw"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls=true"
+      - "traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls.certresolver=letsencrypt"
+      - "traefik.http.services.http-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80"
+      - "traefik.http.services.https-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80"
     environment:
       CADDY_TLS_BLOCK: ""
       CADDY_HOST: "http://"
