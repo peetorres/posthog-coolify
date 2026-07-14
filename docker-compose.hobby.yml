@@ -303,7 +303,6 @@ services:
             file: docker-compose.base.yml
             service: proxy
         logging: *default-logging
-        ports: []
         expose:
             - '80'
         labels:
@@ -345,7 +344,6 @@ services:
         logging: *default-logging
         volumes:
             - objectstorage:/data
-        ports: []
 
     seaweedfs:
         extends:
@@ -354,7 +352,6 @@ services:
         container_name: '${SEAWEEDFS_DOCKER_NAME:-seaweedfs-main}'
         restart: on-failure
         logging: *default-logging
-        ports: []
         volumes:
             - seaweedfs:/data
         healthcheck:
@@ -397,7 +394,6 @@ services:
         logging: *default-logging
         environment:
             - ENABLE_ES=false
-        ports: []
         volumes:
             - ./docker/temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
     elasticsearch:
@@ -417,7 +413,6 @@ services:
             file: docker-compose.base.yml
             service: temporal-ui
         logging: *default-logging
-        ports: []
         depends_on:
             temporal:
                 condition: service_started
