@@ -174,6 +174,8 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            IS_BEHIND_PROXY: 'True'
+            TRUST_ALL_PROXIES: 'True'
         depends_on:
             - db
             - redis7
@@ -301,14 +303,30 @@ services:
             file: docker-compose.base.yml
             service: proxy
         logging: *default-logging
-        ports:
-            - '80:80'
-            - '443:443'
+        ports: []
+        expose:
+            - '80'
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.middlewares.gzip.compress=true'
+            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+            - 'traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.entryPoints=http'
+            - 'traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.middlewares=redirect-to-https'
+            - 'traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.rule=Host(`posthog.app.iapplabs.com`) && PathPrefix(`/`)'
+            - 'traefik.http.routers.http-0-y6s32fammnhcr2l7x4ulkhlw.service=http-0-y6s32fammnhcr2l7x4ulkhlw'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.entryPoints=https'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.middlewares=gzip'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.rule=Host(`posthog.app.iapplabs.com`) && PathPrefix(`/`)'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.service=https-0-y6s32fammnhcr2l7x4ulkhlw'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls=true'
+            - 'traefik.http.routers.https-0-y6s32fammnhcr2l7x4ulkhlw.tls.certresolver=letsencrypt'
+            - 'traefik.http.services.http-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80'
+            - 'traefik.http.services.https-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=80'
         volumes:
             - caddy-data:/data
             - caddy-config:/config
         environment:
-            CADDY_TLS_BLOCK: $TLS_BLOCK
+            CADDY_TLS_BLOCK: ''
             CADDY_HOST: 'http://'
         depends_on:
             - web
@@ -327,9 +345,7 @@ services:
         logging: *default-logging
         volumes:
             - objectstorage:/data
-        ports:
-            - '19000:19000'
-            - '19001:19001'
+        ports: []
 
     seaweedfs:
         extends:
@@ -338,9 +354,7 @@ services:
         container_name: '${SEAWEEDFS_DOCKER_NAME:-seaweedfs-main}'
         restart: on-failure
         logging: *default-logging
-        ports:
-            - '127.0.0.1:8333:8333' # S3 API
-            - '127.0.0.1:9333:9333' # Master server
+        ports: []
         volumes:
             - seaweedfs:/data
         healthcheck:
@@ -383,8 +397,7 @@ services:
         logging: *default-logging
         environment:
             - ENABLE_ES=false
-        ports:
-            - 7233:7233
+        ports: []
         volumes:
             - ./docker/temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
     elasticsearch:
@@ -404,8 +417,7 @@ services:
             file: docker-compose.base.yml
             service: temporal-ui
         logging: *default-logging
-        ports:
-            - 8081:8080
+        ports: []
         depends_on:
             temporal:
                 condition: service_started
