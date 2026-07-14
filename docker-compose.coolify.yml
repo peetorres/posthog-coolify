@@ -26,7 +26,7 @@ services:
       - "traefik.http.services.https-0-y6s32fammnhcr2l7x4ulkhlw.loadbalancer.server.port=8000"
     environment:
       CADDY_TLS_BLOCK: ""
-      CADDY_HOST: ":8000"
+      CADDY_HOST: ":80, :8000"
 
   web:
     environment:
