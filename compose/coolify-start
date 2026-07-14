@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+
+config_dir=/data/coolify/applications/y6s32fammnhcr2l7x4ulkhlw
+
+docker compose \
+    --env-file "$config_dir/.env" \
+    -f "$config_dir/docker-compose.yaml" \
+    -f "$config_dir/docker-compose.coolify.yml" \
+    up -d --no-build --pull always
