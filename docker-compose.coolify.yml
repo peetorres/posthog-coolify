@@ -1,0 +1,24 @@
+services:
+  # Keep PostHog's route-aware Caddy proxy, but leave public ports and TLS to Coolify.
+  proxy:
+    ports: !reset []
+    expose:
+      - "80"
+    environment:
+      CADDY_TLS_BLOCK: ""
+      CADDY_HOST: "http://"
+
+  web:
+    environment:
+      IS_BEHIND_PROXY: "True"
+      TRUST_ALL_PROXIES: "True"
+
+  # These are internal PostHog dependencies and must not open host ports.
+  objectstorage:
+    ports: !reset []
+  seaweedfs:
+    ports: !reset []
+  temporal:
+    ports: !reset []
+  temporal-ui:
+    ports: !reset []
